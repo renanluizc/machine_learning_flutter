@@ -1,8 +1,7 @@
 import 'dart:io';
 
-import 'package:dynamic_theme/dynamic_theme.dart';
-import 'package:dynamic_theme/theme_switcher_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:teachable_ml/helpers/camera_helper.dart';
 import 'package:teachable_ml/helpers/tflite_helper.dart';
@@ -35,20 +34,21 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         centerTitle: true,
         title: Text('Teachable Machine'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.lightbulb_outline),
-            onPressed: (){
-              _buildChooser();
-            },
+      ),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          FloatingActionButton(
+            child: Icon(Icons.image),
+            onPressed: _openGallery,
+          ), 
+          FloatingActionButton(
+          child: Icon(Icons.photo_camera),
+          onPressed: _pickImage,
           ),
+          
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.photo_camera),
-        onPressed: _pickImage,
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -59,18 +59,6 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-    );
-  }
-
-  _buildChooser(){
-    showDialog(context: context,
-      builder: (context) {
-        return BrightnessSwitcherDialog(
-          onSelectedTheme: (brightness) {
-            DynamicTheme.of(context).setBrightness(brightness);
-          },
-        );
-      }
     );
   }
 
@@ -98,6 +86,16 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  _openGallery() async {
+    final image = await ImagePicker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      _image = image;
+    });
+
+    Navigator.of(context).pop();
   }
 
   _pickImage() async {
